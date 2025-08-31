@@ -172,6 +172,5 @@ This project is open source and available for personal and commercial use.
 ---
 
 🚀 Thank you for using **Cisco Backup Manager**!
-```
 
 ---
