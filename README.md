@@ -1,152 +1,143 @@
 # Cisco Backup Manager
 
-A simple web tool to backup Cisco router and switch configurations easily.  
-You can enter device details manually or upload a CSV/YAML file to backup multiple devices at once.
+A simple web-based tool to backup Cisco routers and switches. You can manually enter device details or upload a CSV/YAML file to backup multiple devices at once.
+
+🌐 **Live Demo**: [Coming Soon]  
+🛠️ **Built with**: Python, Flask, Netmiko  
+📁 **GitHub Repo**: https://github.com/SumonPaul18/cisco-backup-manager.git
 
 ---
 
-## 🚀 Features
+## 📥 How to Download and Run the App
 
-- ✅ Backup Cisco devices (routers & switches) via SSH
-- ✅ Manual form to enter IP, username, password
-- ✅ Upload CSV or YAML file for bulk backup
-- ✅ View backup status and logs
-- ✅ Clean and user-friendly web interface
-- ✅ Save running-config automatically
+Follow these easy steps to run the Cisco Backup Manager on your computer.
 
----
+### Step 1: Clone the Repository
 
-## 🛠️ How to Install
+Open your terminal (or Command Prompt) and run:
 
-1. **Clone or create the project folder**
-   ```bash
-   mkdir cisco_backup_app
-   cd cisco_backup_app
-   ```
-
-2. **Create a virtual environment**
-   ```bash
-   python -m venv venv
-   ```
-
-   - On Windows:
-     ```bash
-     venv\Scripts\activate
-     ```
-   - On Mac/Linux:
-     ```bash
-     source venv/bin/activate
-     ```
-
-3. **Create `requirements.txt`** with the following content:
-   ```txt
-   Flask==3.0.0
-   Flask-WTF==1.2.1
-   Flask-Bootstrap==3.3.7.1
-   python-dotenv==1.0.1
-   netmiko==4.4.0
-   pyyaml
-   ```
-
-4. **Install the packages**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
----
-
-## 🔐 Setup Environment
-
-Create a file named `.env` in your project folder:
-```env
-SECRET_KEY=your_strong_secret_key_here
-BACKUP_DIR=backups
-LOG_DIR=logs
-```
-
-> Replace `your_strong_secret_key_here` with any random text (e.g., `abc123xyz456`).
-
----
-
-## 📁 Folder Structure
-
-After setup, your project should look like this:
-```
-cisco_backup_app/
-├── app.py
-├── .env
-├── requirements.txt
-├── templates/
-│   ├── base.html
-│   ├── index.html
-│   ├── manual.html
-│   ├── upload.html
-│   └── status.html
-├── backups/          # Saved configs
-├── logs/             # Log files
-└── uploads/          # Uploaded CSV/YAML files
+```bash
+git clone https://github.com/SumonPaul18/cisco-backup-manager.git
+cd cisco-backup-manager
 ```
 
 ---
 
-## 🖥️ Run the App
+## Now Open Terminal from the Project Folder
+
+### Step 2: Create a Virtual Environment
+
+It's best to keep the app's files separate from your system.
+
+```bash
+python -m venv venv
+```
+
+#### Activate the Virtual Environment:
+
+- **Windows**:
+  ```bash
+  venv\Scripts\activate
+  ```
+
+- **Mac/Linux**:
+  ```bash
+  source venv/bin/activate
+  ```
+
+---
+
+### Step 3: Install Required Packages
+
+Install all the needed tools using `pip`:
+
+```bash
+pip install -r requirements.txt
+```
+
+> 💡 If you get an error with `pyyaml`, try:
+> ```bash
+> pip install --only-binary=pyyaml pyyaml
+> ```
+
+---
+
+### Step 4: Configure the App
+
+1. Open the `.env` file in a text editor.
+2. Change the `SECRET_KEY` to any random text (e.g., `abc123xyz`).
+3. Save the file.
+
+> 🔐 This key keeps your app secure. Don't share it!
+
+---
+
+### Step 5: Run the Application
+
+Start the web server:
 
 ```bash
 python app.py
 ```
 
-Open your browser and go to:  
-👉 [http://127.0.0.1:5000](http://127.0.0.1:5000)
+You will see something like:
 
----
-
-## 🧩 How to Use
-
-### 1. **Manual Backup**
-- Go to **Home Page**
-- Enter:
-  - Device IP Address
-  - Username
-  - Password
-  - Device Type (e.g., `cisco_ios`)
-- Click **Backup Now**
-
-✅ Configuration will be saved in the `backups/` folder.
-
----
-
-### 2. **Upload CSV or YAML File**
-
-#### 📄 CSV Format (`devices.csv`)
-```csv
-ip,username,password,device_type
-192.168.1.1,admin,pass,cisco_ios
-192.168.1.2,admin,pass,cisco_ios
+```
+ * Running on http://127.0.0.1:5000
 ```
 
-#### 📄 YAML Format (`devices.yaml`)
+---
+
+### Step 6: Open in Your Browser
+
+Go to: [http://127.0.0.1:5000](http://127.0.0.1:5000)
+
+You can now:
+- Enter device info and click **Backup Now**
+- Upload a CSV or YAML file for bulk backup
+- View backup status and logs
+
+---
+
+## 📁 Where Are Backups Saved?
+
+All backup files are saved in the `backups/` folder.  
+Each file is named like: `192.168.1.1_20250405_142301.cfg`
+
+---
+
+## 📄 File Format Examples
+
+### CSV File (`devices.csv`)
+```csv
+ip,username,password,device_type
+192.168.1.1,admin,secret,cisco_ios
+192.168.1.2,admin,secret,cisco_nxos
+```
+
+### YAML File (`devices.yaml`)
 ```yaml
 - ip: 192.168.1.1
   username: admin
-  password: pass
+  password: secret
   device_type: cisco_ios
 - ip: 192.168.1.2
   username: admin
-  password: pass
-  device_type: cisco_ios
+  password: secret
+  device_type: cisco_nxos
 ```
 
-- Go to **Upload File** page
-- Upload your CSV or YAML file
-- The app will validate and backup all devices
+> ✅ Supported file types: `.csv`, `.yaml`, `.yml`
 
 ---
 
-### 3. **View Status & Logs**
-- Click **Status & Logs**
-- See:
-  - List of saved backup files
-  - Recent logs (success/failure)
+## 🛠️ Features
+
+- ✅ Manual device backup via web form
+- ✅ Upload CSV or YAML for bulk backup
+- ✅ Backup status and logs
+- ✅ Secure and easy-to-use interface
+- ✅ Works with Cisco IOS, NX-OS, and more
 
 ---
 
@@ -154,24 +145,33 @@ ip,username,password,device_type
 
 - Python 3.7 or higher
 - SSH access to your Cisco devices
-- Devices must allow `show running-config` command
-- Enable password (if used) should be set in Netmiko (advanced)
+- Devices must allow SSH login with username/password
 
 ---
 
-## 💡 Tips
+## 📝 Notes
 
-- Keep your `.env` file private (don’t share it)
-- Regularly backup the `backups/` folder
-- Use strong passwords and secure network
+- Make sure your computer can reach the Cisco devices via network.
+- For security, never commit `.env` or password files to GitHub.
+- Logs are saved in the `logs/` folder.
 
 ---
 
-## 📬 Feedback & Support
+## 🙌 Support
 
-If you find any issue or need help, feel free to contact.
+Have questions or need help?  
+Open an issue on GitHub:  
+👉 https://github.com/SumonPaul18/cisco-backup-manager/issues
 
-Made with ❤️ for Network Engineers.
+---
+
+## 📜 License
+
+This project is open source and available for personal and commercial use.
+
+---
+
+🚀 Thank you for using **Cisco Backup Manager**!
 ```
 
 ---
