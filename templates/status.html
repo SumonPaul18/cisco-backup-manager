@@ -1,0 +1,19 @@
+<!-- templates/status.html -->
+{% extends "base.html" %}
+{% block content %}
+<h2>Backup Status & Logs</h2>
+
+<h4>Backup Files ({{ backups|length }} found):</h4>
+<ul class="list-group">
+    {% for b in backups %}
+    <li class="list-group-item">{{ b }}</li>
+    {% endfor %}
+</ul>
+
+<h4 class="mt-4">Recent Logs:</h4>
+<pre style="background:#f8f9fa; padding:10px; border-radius:5px; max-height:400px; overflow:auto;">
+    {% for line in logs %}
+    {{ line }}
+    {% endfor %}
+</pre>
+{% endblock %}

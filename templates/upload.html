@@ -1,0 +1,31 @@
+<!-- templates/upload.html -->
+{% extends "base.html" %}
+{% block content %}
+<h2>Upload CSV or YAML File</h2>
+<form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.file.label(class="form-label") }}
+        {{ form.file(class="form-control") }}
+    </div>
+    {{ form.submit(class="btn btn-success") }}
+</form>
+
+<h4 class="mt-4">File Format Examples:</h4>
+<pre>
+CSV:
+ip,username,password,device_type
+192.168.1.1,admin,pass,cisco_ios
+192.168.1.2,admin,pass,cisco_nxos
+
+YAML:
+- ip: 192.168.1.1
+  username: admin
+  password: pass
+  device_type: cisco_ios
+- ip: 192.168.1.2
+  username: admin
+  password: pass
+  device_type: cisco_nxos
+</pre>
+{% endblock %}
