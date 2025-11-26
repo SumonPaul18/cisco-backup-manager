@@ -2,10 +2,10 @@
 
 A simple web-based tool to backup Cisco routers and switches. You can manually enter device details or upload a CSV/YAML file to backup multiple devices at once.
 
-🌐 **Live Demo**: [Coming Soon]
-🛠️ **Built with**: Python, Flask, Netmiko, APScheduler
-📦 **Containerized**: Docker & Docker Compose
-📁 **GitHub Repo**: https://github.com/SumonPaul18/cisco-backup-manager.git
+🌐 **Live Demo**: [Coming Soon]<br>
+🛠️ **Built with**: Python, Flask, Netmiko, APScheduler <br>
+📦 **Containerized**: Docker & Docker Compose <br>
+📁 **GitHub Repo**: https://github.com/SumonPaul18/cisco-backup-manager.git <br>
 
 ---
 ## 📥 How to Run (Option 1: Without Docker)
