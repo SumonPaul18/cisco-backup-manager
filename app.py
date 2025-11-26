@@ -11,12 +11,15 @@ from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
 from netmiko import ConnectHandler
 from dotenv import load_dotenv
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+import atexit
 
 # Load environment variables
 load_dotenv()
 
 # Configuration
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY", "your_strong_secret_key_here")
 BACKUP_DIR = os.getenv("BACKUP_DIR", "backups")
 LOG_DIR = os.getenv("LOG_DIR", "logs")
 
@@ -41,7 +44,7 @@ class DeviceForm(FlaskForm):
     ip = StringField('IP Address', validators=[DataRequired()])
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-    device_type = StringField('Device Type (e.g., cisco_ios)', default='cisco_ios')
+    device_type = StringField('Device Type', default='cisco_ios')
     submit = SubmitField('Backup Now')
 
 class UploadForm(FlaskForm):
@@ -51,7 +54,7 @@ class UploadForm(FlaskForm):
     ])
     submit = SubmitField('Upload & Backup')
 
-# Helper: Validate and parse CSV
+# Helper: Parse CSV
 def parse_csv(file_path):
     devices = []
     try:
@@ -59,7 +62,7 @@ def parse_csv(file_path):
             reader = csv.DictReader(f)
             for row in reader:
                 if not row.get('ip') or not row.get('username') or not row.get('password'):
-                    return False, "CSV missing required fields (ip, username, password)"
+                    return False, "CSV missing required fields"
                 devices.append({
                     'ip': row['ip'],
                     'username': row['username'],
@@ -70,7 +73,7 @@ def parse_csv(file_path):
     except Exception as e:
         return False, str(e)
 
-# Helper: Validate and parse YAML
+# Helper: Parse YAML
 def parse_yaml(file_path):
     try:
         with open(file_path) as f:
@@ -110,9 +113,23 @@ def backup_device(device_info):
         logging.error(error_msg)
         return False, error_msg
 
+# Scheduled Backup Function
+def scheduled_backup_job(devices):
+    for device in devices:
+        success, msg = backup_device(device)
+        if success:
+            logging.info(f"Scheduled Backup Success: {device['ip']} - {msg}")
+        else:
+            logging.error(f"Scheduled Backup Failed: {device['ip']} - {msg}")
+
+# Initialize Scheduler
+scheduler = BackgroundScheduler()
+scheduled_job = None  # Global variable to track the job
+
 @app.route('/')
 def index():
-    return render_template('index.html', year=datetime.now().year)
+    year = datetime.now().year
+    return render_template('index.html', year=year)
 
 @app.route('/manual', methods=['GET', 'POST'])
 def manual_backup():
@@ -152,7 +169,6 @@ def upload_file():
             flash(f"❌ File validation failed: {data}", "danger")
             return redirect(url_for('upload_file'))
 
-        # Start backup for all devices
         results = []
         for device in data:
             success, msg = backup_device(device)
@@ -166,6 +182,65 @@ def upload_file():
 
     return render_template('upload.html', form=form)
 
+@app.route('/schedule', methods=['GET', 'POST'])
+def schedule_backup():
+    global scheduled_job  # ✅ শুধুমাত্র একবার
+
+    if request.method == 'POST':
+        hour = request.form.get('hour')
+        minute = request.form.get('minute')
+
+        if not hour or not minute:
+            flash("❌ Please select both hour and minute.", "danger")
+            return redirect(url_for('schedule_backup'))
+
+        try:
+            hour = int(hour)
+            minute = int(minute)
+            if hour < 0 or hour > 23 or minute < 0 or minute > 59:
+                raise ValueError
+        except ValueError:
+            flash("❌ Invalid time selected.", "danger")
+            return redirect(url_for('schedule_backup'))
+
+        sample_devices = [
+            {'ip': '192.168.1.1', 'username': 'admin', 'password': 'secret', 'device_type': 'cisco_ios'},
+            {'ip': '192.168.1.2', 'username': 'admin', 'password': 'secret', 'device_type': 'cisco_ios'}
+        ]
+
+        # Remove old job
+        if scheduled_job:
+            scheduler.remove_job(scheduled_job.id)
+
+        # Add new job
+        job = scheduler.add_job(
+            func=scheduled_backup_job,
+            trigger=CronTrigger(hour=hour, minute=minute),
+            args=[sample_devices],
+            id='cisco_backup_job',
+            replace_existing=True,
+            name='Daily Cisco Backup'
+        )
+
+        scheduled_job = job  # ✅ শুধু অ্যাসাইন
+
+        flash(f"✅ Backup scheduled daily at {hour:02d}:{minute:02d}!", "success")
+        return redirect(url_for('schedule_backup'))
+
+    next_run = scheduled_job.next_run_time.strftime('%H:%M') if scheduled_job else "Not set"
+    return render_template('schedule.html', next_run=next_run)
+
+@app.route('/cancel_schedule')
+def cancel_schedule():
+    global scheduled_job
+    if scheduled_job:
+        scheduler.remove_job(scheduled_job.id)
+        scheduled_job = None
+        flash("⏸️ Backup schedule canceled.", "info")
+    else:
+        flash("❌ No active schedule to cancel.", "warning")
+    return redirect(url_for('schedule_backup'))
+
 @app.route('/status')
 def status():
     backups = os.listdir(BACKUP_DIR)
@@ -174,8 +249,15 @@ def status():
     log_path = os.path.join(LOG_DIR, 'backup.log')
     if os.path.exists(log_path):
         with open(log_path, 'r') as f:
-            log_content = f.readlines()[-50:]  # last 50 lines
+            log_content = f.readlines()[-50:]
     return render_template('status.html', backups=backups, logs=log_content)
+
+# Start scheduler when app starts
+if not scheduler.running:
+    scheduler.start()
+
+# Shut down the scheduler when exiting
+atexit.register(lambda: scheduler.shutdown())
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=5000)

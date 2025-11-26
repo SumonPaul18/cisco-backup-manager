@@ -1,0 +1,42 @@
+<!-- templates/schedule.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header bg-info text-white">
+        <h3>Schedule Daily Backup</h3>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">Set a daily time to automatically backup your Cisco devices.</p>
+
+        <form method="POST">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="hour" class="form-label">Hour (0-23)</label>
+                    <select class="form-select" id="hour" name="hour" required>
+                        {% for h in range(24) %}
+                        <option value="{{ h }}">{{ "%02d"|format(h) }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="minute" class="form-label">Minute (0-59)</label>
+                    <select class="form-select" id="minute" name="minute" required>
+                        {% for m in range(0, 60, 5) %}
+                        <option value="{{ m }}">{{ "%02d"|format(m) }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">Set Schedule</button>
+        </form>
+
+        <hr>
+
+        <h5>Current Schedule</h5>
+        <p><strong>Next Run:</strong> {{ next_run }} (24-hour format)</p>
+        {% if scheduled_job %}
+        <a href="/cancel_schedule" class="btn btn-warning btn-sm">Cancel Schedule</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

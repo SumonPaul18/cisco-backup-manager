@@ -4,4 +4,5 @@ Flask-WTF==1.2.1
 Flask-Bootstrap==3.3.7.1
 python-dotenv==1.0.1
 netmiko==4.4.0
+apscheduler==3.10.4
 pyyaml
