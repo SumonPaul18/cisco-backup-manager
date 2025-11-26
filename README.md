@@ -10,8 +10,6 @@ A simple web-based tool to backup Cisco routers and switches. You can manually e
 ---
 ## 📥 How to Run (Option 1: Without Docker)
 
-## 📥 How to Download and Run the App
-
 Follow these easy steps to run the Cisco Backup Manager on your computer.
 
 ### Step 1: Clone the Repository
@@ -195,21 +193,23 @@ ip,username,password,device_type
 
 ---
 
-## 🛠️ Features
+## ✅ Features
 
 - ✅ Manual device backup via web form
 - ✅ Upload CSV or YAML for bulk backup
-- ✅ Backup status and logs
-- ✅ Secure and easy-to-use interface
-- ✅ Works with Cisco IOS, NX-OS, and more
+- ✅ Daily scheduled backups
+- ✅ View status & logs
+- ✅ Docker support for easy deployment
+- ✅ Works with Cisco IOS, NX-OS, etc.
 
 ---
 
 ## ⚠️ Requirements
 
-- Python 3.7 or higher
+- Python 3.7+ (for non-Docker setup)
+- Docker & Docker Compose (for container setup)
 - SSH access to your Cisco devices
-- Devices must allow SSH login with username/password
+- Devices must allow SSH login
 
 ---
 
