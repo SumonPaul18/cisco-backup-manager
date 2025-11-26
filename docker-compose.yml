@@ -1,0 +1,16 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  cisco-backup-manager:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backups:/app/backups
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    environment:
+      - SECRET_KEY=your_strong_secret_key_here
+    restart: unless-stopped
+    container_name: cisco-backup-manager

@@ -3,10 +3,12 @@
 A simple web-based tool to backup Cisco routers and switches. You can manually enter device details or upload a CSV/YAML file to backup multiple devices at once.
 
 🌐 **Live Demo**: [Coming Soon]  
-🛠️ **Built with**: Python, Flask, Netmiko  
+🛠️ **Built with**: Python, Flask, Netmiko, APScheduler
+📦 **Containerized**: Docker & Docker Compose    
 📁 **GitHub Repo**: https://github.com/SumonPaul18/cisco-backup-manager.git
 
 ---
+## 📥 How to Run (Option 1: Without Docker)
 
 ## 📥 How to Download and Run the App
 
@@ -97,6 +99,68 @@ You can now:
 - Upload a CSV or YAML file for bulk backup
 - View backup status and logs
 
+---
+## 🐳 How to Run (Option 2: With Docker)
+
+### Step 1: Install Docker & Docker Compose
+
+- **Docker**: https://docs.docker.com/get-docker/
+- **Docker Compose**: Usually included with Docker Desktop
+
+### Step 2: Clone the Repository
+
+```bash
+git clone https://github.com/SumonPaul18/cisco-backup-manager.git
+cd cisco-backup-manager
+```
+
+### Step 3: Build and Run with Docker Compose
+
+```bash
+docker-compose up --build
+```
+
+> 💡 The first time it will take a few minutes to build the image.
+
+### Step 4: Open in Browser
+
+Go to: [http://127.0.0.1:5000](http://127.0.0.1:5000)
+
+✅ App is now running in a container!
+
+---
+
+## 🔁 Persistent Data
+
+The following folders are mounted as volumes:
+- `backups/` → Saved configuration files
+- `logs/` → Application logs
+- `uploads/` → Uploaded CSV/YAML files
+
+> These files persist even if you stop or rebuild the container.
+
+---
+
+## ⚙️ Environment Variables
+
+Edit `docker-compose.yml` to change:
+- `SECRET_KEY`: Change to a strong random key
+- Add more environment variables if needed
+
+---
+
+## 🛑 Stop the Container
+
+Press `Ctrl + C` in terminal, or run:
+
+```bash
+docker-compose down
+```
+
+To remove containers and images:
+```bash
+docker-compose down --rmi all
+```
 ---
 
 ## 📁 Where Are Backups Saved?
